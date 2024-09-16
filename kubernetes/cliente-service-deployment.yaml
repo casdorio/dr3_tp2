@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cliente-service-deployment
+  labels:
+    app: cliente-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cliente-service
+  template:
+    metadata:
+      labels:
+        app: cliente-service
+    spec:
+      containers:
+        - name: cliente-service
+          image: cliente-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: EUREKA_SERVER_URL
+              value: http://eureka-service:8761/eureka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cliente-service-service
+spec:
+  selector:
+    app: cliente-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

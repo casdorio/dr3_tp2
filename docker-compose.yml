@@ -1,4 +1,19 @@
 services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clientesdb
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: senha
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - microservice-network
+
+
   eureka:
     image: eureka:latest
     container_name: eureka
@@ -21,11 +36,16 @@ services:
     networks:
       - microservice-network
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/clientesdb
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_SERVER_URL=http://eureka:8761/eureka
     depends_on:
       - eureka
+      - mysql
 
 networks:
   microservice-network:
     driver: bridge
+
+volumes:
+  mysql-data:
