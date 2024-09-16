@@ -1,0 +1,31 @@
+services:
+  eureka:
+    image: eureka:latest
+    container_name: eureka
+    build:
+      context: ./eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  cliente-service:
+    image: cliente-service:latest
+    container_name: cliente-service
+    build:
+      context: ./cliente-service
+    ports:
+      - "8080:8080"
+    networks:
+      - microservice-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_SERVER_URL=http://eureka:8761/eureka
+    depends_on:
+      - eureka
+
+networks:
+  microservice-network:
+    driver: bridge
